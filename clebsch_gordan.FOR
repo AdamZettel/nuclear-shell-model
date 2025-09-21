@@ -1,0 +1,69 @@
+      FUNCTION VN02BA(J1,J2,J,M1,M2,M)
+      COMMON/VN06FC/FCT(40)
+       INTEGER Z,ZMIN,ZMAX,FASE
+C
+C VN02BA DENOTES THE CLEBSCH-GORDAN COEFFICIENT
+C  <J1,M1,J2,M2 I J1,J2,J,M>
+C
+      CC=0.
+      IF(M1+M2-M)20,1,20
+1      IF(IABS(M1)-IABS(J1))2,2,20
+2     IF(IABS(M2)-IABS(J2))3,3,20
+3     IF(IABS(M)-IABS(J))4,4,20
+4     IF(J-J1-J2)5,5,20
+5      IF(J-IABS(J1-J2))20,6,6
+6     ZMIN=0
+       IF(J-J2+M1)7,8,8
+7      ZMIN=-J+J2-M1
+8     IF(J-J1-M2+ZMIN)9,10,10
+9     ZMIN=-J+J1+M2
+10    ZMAX=J1+J2-J
+       IF(J2+M2-ZMAX)11,12,12
+11     ZMAX=J2+M2
+12     IF(J1-M1-ZMAX)13,14,14
+13     ZMAX=J1-M1
+14     DO 15 Z=ZMIN,ZMAX,2
+      JA=Z/2+1
+       JB=(J1+J2-J-Z)/2+1
+       JC=(J1-M1-Z)/2+1
+       JD=(J2+M2-Z)/2+1
+       JE=(J-J2+M1+Z)/2+1
+       JF=(J-J1-M2+Z)/2+1
+       FASE=((-1)**(Z/2))
+       F2=FASE
+15    CC=CC+F2/(FCT(JA)*FCT(JB)*FCT(JC)*FCT(JD)*FCT(JE)*
+     1FCT(JF))
+       JA=(J1+J2-J)/2+1
+       JB=(J1-J2+J)/2+1
+       JC=(-J1+J2+J)/2+1
+      JD=(J1+M1)/2+1
+       JE=(J1-M1)/2+1
+       JF=(J2+M2)/2+1
+       JG=(J2-M2)/2+1
+       JH=(J+M)/2+1
+       JI=(J-M)/2+1
+       JJ=(J1+J2+J+2)/2+1
+       F1=J+1
+       CC=SQRT(F1*FCT(JA)*FCT(JB)*FCT(JC)*FCT(JD)*FCT(JE)*
+     1FCT(JF)*FCT(JG)*FCT(JH)*FCT(JI)/FCT(JJ))*CC
+ 20   VN02BA=CC /SQRT(10.)
+       RETURN
+       END
+       PROGRAM CLEBSCH
+C
+C  TEST PROGRAM TO EVALUATE THE CLEBSCH-GORDAN COEFFICIENTS
+C
+      COMMON/VN06FC/FCT(40)
+      FCT(1)=1.
+      DO 400 I=2,40
+ 400  FCT(I)=FCT(I-1)*(I-1.)/10.
+ 4    READ(1,2)J1,J2,J3,M1,M2,M3,ICON
+ 2    FORMAT(7I2)
+      X=VN02BA(J1,J2,J3,M1,M2,M3)
+      WRITE(6,3)J1,J2,J3,M1,M2,M3,X
+ 3    FORMAT(1H ,6I4,E22.8)
+      IF(ICON.EQ.0)GOTO 5
+      GOTO 4
+ 5    STOP
+      END
+
